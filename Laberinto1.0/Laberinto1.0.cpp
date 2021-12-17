@@ -27,6 +27,11 @@ int op;
 char Usu[20], Con[20];
 jugadores J;
 
+int dif;
+
+int  LargoLaberinto;
+int  AlturaLaberinto;		//Declaramos que tipo de variables vamos a usar y de que tipo para evitar problemas
+
 class Laberinto : public olcConsoleGameEngine  //Nombre de la clase que vamos a usar
 {
 public:
@@ -36,8 +41,6 @@ public:
 	}
 
 private:  //Privada no queremos lo modifiquen en el main o alguna otra parte solo esta clase 
-	int  LargoLaberinto;
-	int  AlturaLaberinto;		//Declaramos que tipo de variables vamos a usar y de que tipo para evitar problemas
 	int* PunteroPlanoC;			//Puntero para usar un array dinamico <-- Vease que es un array dinamico 
 
 	int yp1; 
@@ -69,8 +72,6 @@ private:  //Privada no queremos lo modifiquen en el main o alguna otra parte sol
 protected:
 	virtual bool OnUserCreate()
 	{
-		LargoLaberinto = 40; //40 columnas
-		AlturaLaberinto = 25; //20 fila
 		PunteroPlanoC = new int[LargoLaberinto * AlturaLaberinto]; //Declaramos un array dinamico
 		memset(PunteroPlanoC, 0, LargoLaberinto * AlturaLaberinto * sizeof(int)); //Formula multiplicas la altura y el largo de la ventana por el tamano de int en bytes //Iniciamos el array dinamico con el tamano en bytes que va a ocupar FIJANDOLO porque al ser dinamico no conservara todo los valores que podriamos usar mas adelante
 		
@@ -248,6 +249,9 @@ protected:
 		}
 		if (GetKey(27).bHeld) { //Si damos esc volvemos a la posicion inicial 
 			J.lose += 1;
+			ap = fopen(Usu, "w");
+			fprintf(ap, "%s %s %d %d", J.nombre, J.contra, J.win, J.lose);
+			fclose(ap);
 			xp1 = xreinicio;
 			yp1 = yreinicio;
 		}
@@ -287,10 +291,11 @@ int main(int argc, char* argv[])
 
 		cout << "Bienvenido al juego de laberinto infinito " << endl << "Donde cada intento es una nueva aventura";
 		cout << "Elige la opcion que deses" << endl;
-		cout << "2.- Inicia Sesion" << endl << "1.- Registrate en infinite maze " << endl << "3.- Empezar a jugar" << endl;
+		cout << "1.- Inicia Sesion" << endl << "2.- Registrate en infinite maze " << endl << "3.- Controles" << endl << "4.- Empezar a jugar" << endl;
 		cin >> op;
 		switch (op) {
 		case 1:
+			system("CLS");
 			printf("Ingresa tu nombre de usuario\n");
 			cin.ignore();
 			cin.getline(Usu, 20);
@@ -298,7 +303,7 @@ int main(int argc, char* argv[])
 			ap = fopen(Usu, "r");
 			if (ap == NULL) {
 				system("CLS");
-				cout << endl << "Debes registarte en maze infinity para obtener tus estadisticas" << endl << endl;
+				cout << endl << "Debes registarte en maze infinity para obtener tus estadisticas" << endl << endl << endl << endl << endl  ;
 				break;
 			}
 			else {
@@ -310,26 +315,53 @@ int main(int argc, char* argv[])
 				break;
 			}
 		case 2:
-			cout << endl << "Ingrese su nombre de ususario" << endl;
+			system("CLS");
+			cout << "Bienvenido a Infinity Maze" << endl;
+			cout << "Ingrese su nombre de ususario" << endl;
 			cin.ignore();
 			cin.getline(Usu, 20);
 			strcat(Usu, ".txt");//pega cadenas
 			ap = fopen(Usu, "w");
-			cout << endl << "Registro exitoso" << endl << "Ingrese nuevamente su usuario" << endl;
-			cin.ignore();
-			cin.getline(J.nombre, 30);
+			system("CLS");
+			cout << "Registro exitoso" << endl;
+			strcpy(J.nombre,Usu);
 			cout << endl << "Ingrese la contrasena" << endl;
 			cin.ignore();
 			cin.getline(J.contra, 30);
 			fprintf(ap, "%s %s %d %d", J.nombre, J.contra, 0, 0);
 			fclose(ap);
+			system("CLS");
+			cout << endl << "Contrasena guardada" << endl;
 			break;
 		case 3:
-			J.win = 3 + J.win;
-			J.lose = 1 + J.lose;
-			ap = fopen(Usu, "w");
-			fprintf(ap, "%s %s %d %d", J.nombre, J.contra, J.win, J.lose);
-			fclose(ap);
+			break;
+		case 4:
+			system("CLS");
+			cout << "Es hora de empezar" << endl << "Seleccione la dificultad" << endl;
+			cout << "1.- Facil" << endl;
+			cout << "2.- Medio" << endl;
+			cout << "3.- Dificil" << endl;
+			cin.ignore();
+			cin >> dif;
+			if (dif == 1) {
+				LargoLaberinto = 15; //40 columnas
+				AlturaLaberinto = 14; //20 fila
+			}
+			else if(dif == 2) {
+				LargoLaberinto = 25; //40 columnas
+				AlturaLaberinto = 15; //20 fila
+			}
+			else if(dif == 3) {
+				LargoLaberinto = 40; //40 columnas
+				AlturaLaberinto = 25; //20 fila
+			}
+			else {
+				cout << "Ingrese una dificultadad valida";
+				break;
+			}
+			Laberinto game;  //Creamos nuestro objeto
+			game.ConstructConsole(160, 100, 8, 8);//Definimos el tamaño de la ventana y el tamaño de los pxls dentro de la misma en este caso de 8*8 (Si todo sale bien devuelve true)
+			game.Start(); //Iniciamos la ventana
 		}
 	} while (op < 4);
 	return 0; //Informamos todo salio bien
