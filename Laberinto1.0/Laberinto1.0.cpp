@@ -75,6 +75,19 @@ private:  //Privada no queremos lo modifiquen en el main o alguna otra parte sol
 protected:
 	virtual bool OnUserCreate()
 	{
+		srand(clock());
+		if (dif == 1) {
+			LargoLaberinto = 10 + rand() % (20 + 1 - 10);  //variable = limite_inferior + rand() % (limite_superior +1 - limite_inferior);
+			AlturaLaberinto = 7 + rand() % (14 + 1 - 7);
+		}
+		else if (dif == 2) {
+			LargoLaberinto = 20 + rand() % (30 + 1 - 20);
+			AlturaLaberinto = 15 + rand() % (20 + 1 - 15);
+		}
+		else if (dif == 3) {
+			LargoLaberinto = 30 + rand() % (40 + 1 - 30);
+			AlturaLaberinto = 20 + rand() % (25 + 1 - 20);
+		}
 		PunteroPlanoC = new int[LargoLaberinto * AlturaLaberinto]; //Declaramos un array dinamico
 		memset(PunteroPlanoC, 0, LargoLaberinto * AlturaLaberinto * sizeof(int)); //Formula multiplicas la altura y el largo de la ventana por el tamano de int en bytes //Iniciamos el array dinamico con el tamano en bytes que va a ocupar FIJANDOLO porque al ser dinamico no conservara todo los valores que podriamos usar mas adelante
 		
@@ -103,7 +116,7 @@ protected:
 
 	virtual bool OnUserUpdate(float fElapsedTime)
 	{
-
+		srand(clock());
 		// Es una funcion lambda esto quiere decir que se genera mientras el programa corre, lo que hace tenga retroalimentacion para el uso de la funcion en tiempo real
 		auto SiguienteBloque = [&](int x, int y) //Indicamos que se va a usar como puntero con la declaracion [&] en este caso de nuestro array dinamico*/
 		{
@@ -114,7 +127,7 @@ protected:
 		{
 			return (yp1 + y) * LargoLaberinto + (xp1 + x);
 		};
-
+		srand(clock());
 		// Limpia la consola y la rellena de ESPACIOS
 		Fill(0, 0, ScreenWidth(), ScreenHeight(), L' ');
 		//For para dibujar los cuadrados del laberinto
@@ -150,7 +163,7 @@ protected:
 							FG_WHITE); <-- El colo solido es blanco
 							IMPORTANTE EMPIEZA EN (0,0) LAS X,Y https://drive.google.com/file/d/1LRG11WN8tC5tmqSYOoeE8EX8oTGziYvx/view?usp=sharing
 							*/
-							Draw(x * (LargoCelda + 1) + px, y * (LargoCelda + 1) + py, PIXEL_SOLID, FG_WHITE);	//Cambiar a blanco esta en modo demostracion 
+							Draw(x * (LargoCelda + 1) + px, y * (LargoCelda + 1) + py, PIXEL_SOLID, FG_WHITE);	//Cambiar a blanco esta en modo demostracion
 						else
 							Draw(x * (LargoCelda + 1) + px, y * (LargoCelda + 1) + py, PIXEL_SOLID, FG_BLUE);
 				}
@@ -165,10 +178,11 @@ protected:
 				}
 			}
 		}
-
+		srand(clock());
 		//Genera el laberinto/algoritmo
 		if (CeldasVisitadas < LargoLaberinto * AlturaLaberinto) //Evalua si debe seguir generando laberinto solo ni no ha visitado todas las cell/cuadrados
 		{
+			srand(clock());
 			vector<int> neighbours;
 			neighbours.clear();
 			// Norte
@@ -199,38 +213,43 @@ protected:
 				switch (next_cell_dir)
 				{
 				case 0: //Elige el caso 0 (Norte) es decir tiene camino al norte
+					srand(clock());
 					PunteroPlanoC[SiguienteBloque(0, -1)] |= CELLSUR;  //Ponemos la flag de que la celda norte a nosotros tiene camino disponible al sur (vease https://drive.google.com/file/d/1EDSLo1Cd9RNViiMdwFYAThsf6jVhT6zr/view)
 					PunteroPlanoC[SiguienteBloque(0, 0)] |= CELLNORTE;  //Ponemos que nuestra celda actual tiene camino al norte disponible
 					m_stack.push(make_pair((m_stack.top().first + 0), (m_stack.top().second - 1))); //Generamos el nuevo tope de nuestro stack con nuestra cordenas nuevas es decir norte.
 					break;  //Rompemos todo este if 
 
 				case 1: // Este
+					srand(clock());
 					PunteroPlanoC[SiguienteBloque(+1, 0)] |= CELLOESTE;
 					PunteroPlanoC[SiguienteBloque(0, 0)] |= CELLESTE;
 					m_stack.push(make_pair((m_stack.top().first + 1), (m_stack.top().second + 0)));
 					break;
 				case 2: // Sur
+					srand(clock());
 					PunteroPlanoC[SiguienteBloque(0, +1)] |= CELLNORTE;
 					PunteroPlanoC[SiguienteBloque(0, 0)] |= CELLSUR;
 					m_stack.push(make_pair((m_stack.top().first + 0), (m_stack.top().second + 1)));
 					break;
 
 				case 3: // Oeste
+					srand(clock());
 					PunteroPlanoC[SiguienteBloque(-1, 0)] |= CELLESTE;
 					PunteroPlanoC[SiguienteBloque(0, 0)] |= CELLOESTE;
 					m_stack.push(make_pair((m_stack.top().first - 1), (m_stack.top().second + 0)));
 					break;
 
 				}
+				srand(clock());
 				PunteroPlanoC[SiguienteBloque(0, 0)] |= CELLVISITADA;
 				CeldasVisitadas++;
 			}
 			else //Si no hay celdas/cuadrados disponibles regresamos 1 lugar en coordenas dentro del stack (Vease algoritmo LIFO) hasta llegar a una celda con vecinos disponibles
 			{
+				srand(clock());
 				m_stack.pop();
 			}
 		}
-
 		int sp = 1;
 		//Norte
 		if (GetKey(38).bPressed && (PunteroPlanoC[posip1(0, 0)] & CELLNORTE) == 1 ||  (PunteroPlanoC[posip1(1, -1)] & CELLOESTE)  == 1) { //Determinamos si puede moverse asi al norte con el uso de flags
@@ -272,6 +291,31 @@ protected:
 			xp1 = xreinicio;
 			yp1 = yreinicio;
 		}
+		if (GetKey(8).bPressed) { //Si damos esc volvemos a la posicion inicial 
+			this_thread::sleep_for(200ms);
+			if (dif == 1 && inicioUsu == true) {
+				J.losef += 1;
+				ap = fopen(Usu, "w");
+				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
+				fclose(ap);
+			}
+			else if (dif == 2 && inicioUsu == true) {
+				J.losem += 1;
+				ap = fopen(Usu, "w");
+				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
+				fclose(ap);
+			}
+			else if (dif == 3 && inicioUsu == true) {
+				J.losed += 1;
+				ap = fopen(Usu, "w");
+				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
+				fclose(ap);
+			}
+			Laberinto game1;  //Creamos nuestro objeto
+			game1.ConstructConsole(160, 100, 8, 8);//Definimos el tamaño de la ventana y el tamaño de los pxls dentro de la misma en este caso de 8*8 (Si todo sale bien devuelve true)
+			game1.Start(); //Iniciamos la ventana
+			this_thread::sleep_for(200ms);
+		}
 
 		for (int py = 0; py < LargoCelda; py++)
 			for (int px = 0; px < LargoCelda; px++)
@@ -294,24 +338,18 @@ protected:
 				ap = fopen(Usu, "w");
 				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
 				fclose(ap);
-				LargoLaberinto = 10 + rand() % (20 + 1 - 10);  //variable = limite_inferior + rand() % (limite_superior +1 - limite_inferior);
-				AlturaLaberinto = 7 + rand() % (14 + 1 - 7);
 			}
 			else if (dif == 2 && inicioUsu == true ) {
 				J.winm += 1;
 				ap = fopen(Usu, "w");
 				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
 				fclose(ap);
-				LargoLaberinto = 20 + rand() % (30 + 1 - 20);
-				AlturaLaberinto = 15 + rand() % (20 + 1 - 15);
 			}
 			else if (dif == 3 && inicioUsu == true) {
 				J.wind += 1;
 				ap = fopen(Usu, "w");
 				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
 				fclose(ap);
-				LargoLaberinto = 30 + rand() % (40 + 1 - 30);
-				AlturaLaberinto = 20 + rand() % (25 + 1 - 20);
 			}
 			//Si es asi regresa al inicio aqui iria la segunda parte donde pasa de nvl,etc.
 			Laberinto game1;  //Creamos nuestro objeto
@@ -328,7 +366,7 @@ int main(int argc, char* argv[])
 
 		cout << "Bienvenido al juego de laberinto infinito " << endl << "Donde cada intento es una nueva aventura" << endl;
 		cout << "Elige la opcion que deses" << endl;
-		cout << "1.- Inicia Sesion" << endl << "2.- Registrate en infinite maze " << endl << "3.- Controles" << endl << "4.- Empezar a jugar" << endl;
+		cout << "1.- Inicia Sesion" << endl << "2.- Registrate en infinite maze " << endl << "3.- Controles/Tutorial" << endl << "4.- Empezar a jugar" << endl;
 		cin >> op;
 		switch (op) {
 		case 1:
@@ -376,18 +414,18 @@ int main(int argc, char* argv[])
 			fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, 0, 0, 0, 0, 0, 0);
 			fclose(ap);
 			system("CLS");
-			cout << J.contra;
 			cout << "Contrasena guardada" << endl;
 			break;
 		case 3:
 			system("CLS");
-			cout << "__________________Controles__________________" << endl;
-			cout << "  ˄   El personaje se movera al norte" << endl;
-			cout << "  ˃   El personaje se movera al este" << endl;
-			cout << "  ˅   El personaje se movera al sur" << endl;
-			cout << "  ˂   El personaje se movera al sur" << endl;
-			cout << " esc  Regresara al jugador a su posici[on inicial y contara 1 derrota" << endl;
-			cout << " Para ganar se necesitara llegar a la meta de color rojo " << endl << endl;
+			cout << "____________________________________Controles/Tutorial____________________________________" << endl;
+			cout << " Flecha arriba			El personaje se movera al norte" << endl;
+			cout << " Flecha derecha		El personaje se movera al este" << endl;
+			cout << " Flecha abajo			El personaje se movera al sur" << endl;
+			cout << " Flecha izquierda		El personaje se movera al sur" << endl;
+			cout << " Tecla retroceso		Para iniciar un nuevo mapa que contara como 1 derrota" << endl;
+			cout << " Tecla esc             Regresara al jugador a su posici[on inicial y contara 1 derrota" << endl;
+			cout << endl << "Para ganar se necesitara llegar a la meta de color rojo " << endl << endl;
 			break;
 		case 4:
 			system("CLS");
@@ -399,22 +437,17 @@ int main(int argc, char* argv[])
 			cout << "4.- Regresar al men[u principal" << endl;
 			cin.ignore();
 			cin >> dif;
-			if (dif == 1) {
-				LargoLaberinto = 10 + rand() % (20 + 1 - 10);  //variable = limite_inferior + rand() % (limite_superior +1 - limite_inferior);
-				AlturaLaberinto = 7 + rand() % (14 + 1 - 7);
-			}
-			else if (dif == 2) {
-				LargoLaberinto = 20 + rand() % (30 + 1 - 20);
-				AlturaLaberinto = 15 + rand() % (20 + 1 - 15);
-			}
-			else if (dif == 3) {
-				LargoLaberinto = 30 + rand() % (40 + 1 - 30);
-				AlturaLaberinto = 20 + rand() % (25 + 1 - 20);
-			}
-			else if (dif == 4) {
+			if (dif == 4) {
+				system("CLS");
 				cout << "Regresando al men[u principal" << endl;
 				break;
-			}else {
+			}
+			else if (dif < 4) {
+				Laberinto game;  //Creamos nuestro objeto
+				game.ConstructConsole(160, 100, 8, 8);//Definimos el tamaño de la ventana y el tamaño de los pxls dentro de la misma en este caso de 8*8 (Si todo sale bien devuelve true)
+				game.Start(); //Iniciamos la ventana
+			}
+			else {
 				cout << "Ingrese una opci[on valida" << endl;
 				break;
 			}
@@ -427,12 +460,10 @@ int main(int argc, char* argv[])
 
 		cout << "Bienvenido " << J.nombre << endl;
 		cout << "Elige la opcion que deses" << endl;
-		cout << "1.- Empezar a jugar" << endl  << "2.- Controles" << endl << "3.- Estadisticas" << endl << "4.- Cerrar secion" << endl;
+		cout << "1.- Empezar a jugar" << endl  << "2.- Controles/Tutorial" << endl << "3.- Estadisticas" << endl << "4.- Cerrar secion" << endl;
 		cin >> op;
 		switch (op) {
 		case 4:
-			inicioUsu = false;
-			inicioSin = true;
 			fclose(ap);
 			cout << "Seci[on cerrada" << endl;
 			break;
@@ -445,13 +476,14 @@ int main(int argc, char* argv[])
 			break;
 		case 2:
 			system("CLS");
-			cout << "__________________Controles__________________" << endl;
-			cout << "  ↑   El personaje se movera al norte" << endl;
-			cout << "  →   El personaje se movera al este" << endl;
-			cout << "  ↓   El personaje se movera al sur" << endl;
-			cout << "  ←   El personaje se movera al sur" << endl;
-			cout << " esc  Regresara al jugador a su posici[on inicial y contara 1 derrota" << endl;
-			cout << " Para ganar se necesitara llegar a la meta de color rojo " << endl << endl;
+			cout << "____________________________________Controles/Tutorial____________________________________" << endl;
+			cout << " Flecha arriba			El personaje se movera al norte" << endl;
+			cout << " Flecha derecha		El personaje se movera al este" << endl;
+			cout << " Flecha abajo			El personaje se movera al sur" << endl;
+			cout << " Flecha izquierda		El personaje se movera al sur" << endl;
+			cout << " Tecla retroceso		Para iniciar un nuevo mapa que contara como 1 derrota" << endl;
+			cout << " Tecla esc             Regresara al jugador a su posici[on inicial y contara 1 derrota" << endl;
+			cout << endl << "Para ganar se necesitara llegar a la meta de color rojo " << endl << endl;
 			break;
 		case 1:
 			system("CLS");
@@ -462,29 +494,20 @@ int main(int argc, char* argv[])
 			cout << "4.- Regresar al men[u principal" << endl;
 			cin.ignore();
 			cin >> dif;
-			if (dif == 1) {
-				LargoLaberinto = 10 + rand() % (20 + 1 - 10);  //variable = limite_inferior + rand() % (limite_superior +1 - limite_inferior);
-				AlturaLaberinto = 7 + rand() % (14 + 1 - 7);
-			}
-			else if (dif == 2) {
-				LargoLaberinto = 20 + rand() % (30 + 1 - 20);
-				AlturaLaberinto = 15 + rand() % (20+1 - 15); 
-			}
-			else if (dif == 3) {
-				LargoLaberinto = 30 + rand() % (40+1-30);
-				AlturaLaberinto = 20 + rand() % (25+1-20);
-			}
-			else if (dif == 4) {
+			if (dif == 4) {
+				system("CLS");
 				cout << "Regresando al men[u principal" << endl;
-				break;
-			}else {
+			}
+			else if (dif < 4) {
+				Laberinto game;  //Creamos nuestro objeto
+				game.ConstructConsole(160, 100, 8, 8);//Definimos el tamaño de la ventana y el tamaño de los pxls dentro de la misma en este caso de 8*8 (Si todo sale bien devuelve true)
+				game.Start(); //Iniciamos la ventana
+			}
+			else {
 				system("CLS");
 				cout << "Ingrese una opci[on valida" << endl << endl;
 				break;
 			}
-			Laberinto game;  //Creamos nuestro objeto
-			game.ConstructConsole(160, 100, 8, 8);//Definimos el tamaño de la ventana y el tamaño de los pxls dentro de la misma en este caso de 8*8 (Si todo sale bien devuelve true)
-			game.Start(); //Iniciamos la ventana
 		}
 
 	} 
