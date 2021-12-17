@@ -1,4 +1,4 @@
-#ifdef _MSC_VER
+﻿#ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 #include <iostream>
@@ -294,22 +294,28 @@ protected:
 				ap = fopen(Usu, "w");
 				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
 				fclose(ap);
+				LargoLaberinto = 10 + rand() % (20 + 1 - 10);  //variable = limite_inferior + rand() % (limite_superior +1 - limite_inferior);
+				AlturaLaberinto = 7 + rand() % (14 + 1 - 7);
 			}
 			else if (dif == 2 && inicioUsu == true ) {
 				J.winm += 1;
 				ap = fopen(Usu, "w");
 				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
 				fclose(ap);
+				LargoLaberinto = 20 + rand() % (30 + 1 - 20);
+				AlturaLaberinto = 15 + rand() % (20 + 1 - 15);
 			}
 			else if (dif == 3 && inicioUsu == true) {
 				J.wind += 1;
 				ap = fopen(Usu, "w");
 				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
 				fclose(ap);
+				LargoLaberinto = 30 + rand() % (40 + 1 - 30);
+				AlturaLaberinto = 20 + rand() % (25 + 1 - 20);
 			}
 			//Si es asi regresa al inicio aqui iria la segunda parte donde pasa de nvl,etc.
 			Laberinto game1;  //Creamos nuestro objeto
-			game1.ConstructConsole(160, 100, 8, 8);//Definimos el tama�o de la ventana y el tama�o de los pxls dentro de la misma en este caso de 8*8 (Si todo sale bien devuelve true)
+			game1.ConstructConsole(160, 100, 8, 8);//Definimos el tamaño de la ventana y el tamaño de los pxls dentro de la misma en este caso de 8*8 (Si todo sale bien devuelve true)
 			game1.Start(); //Iniciamos la ventana
 
 		}
@@ -374,6 +380,14 @@ int main(int argc, char* argv[])
 			cout << "Contrasena guardada" << endl;
 			break;
 		case 3:
+			system("CLS");
+			cout << "__________________Controles__________________" << endl;
+			cout << "  ˄   El personaje se movera al norte" << endl;
+			cout << "  ˃   El personaje se movera al este" << endl;
+			cout << "  ˅   El personaje se movera al sur" << endl;
+			cout << "  ˂   El personaje se movera al sur" << endl;
+			cout << " esc  Regresara al jugador a su posici[on inicial y contara 1 derrota" << endl;
+			cout << " Para ganar se necesitara llegar a la meta de color rojo " << endl << endl;
 			break;
 		case 4:
 			system("CLS");
@@ -386,16 +400,16 @@ int main(int argc, char* argv[])
 			cin.ignore();
 			cin >> dif;
 			if (dif == 1) {
-				LargoLaberinto = 15; //40 columnas
-				AlturaLaberinto = 14; //20 fila
+				LargoLaberinto = 10 + rand() % (20 + 1 - 10);  //variable = limite_inferior + rand() % (limite_superior +1 - limite_inferior);
+				AlturaLaberinto = 7 + rand() % (14 + 1 - 7);
 			}
 			else if (dif == 2) {
-				LargoLaberinto = 25; //40 columnas
-				AlturaLaberinto = 15; //20 fila
+				LargoLaberinto = 20 + rand() % (30 + 1 - 20);
+				AlturaLaberinto = 15 + rand() % (20 + 1 - 15);
 			}
 			else if (dif == 3) {
-				LargoLaberinto = 40; //40 columnas
-				AlturaLaberinto = 25; //20 fila
+				LargoLaberinto = 30 + rand() % (40 + 1 - 30);
+				AlturaLaberinto = 20 + rand() % (25 + 1 - 20);
 			}
 			else if (dif == 4) {
 				cout << "Regresando al men[u principal" << endl;
@@ -405,7 +419,7 @@ int main(int argc, char* argv[])
 				break;
 			}
 			Laberinto game;  //Creamos nuestro objeto
-			game.ConstructConsole(160, 100, 8, 8);//Definimos el tama�o de la ventana y el tama�o de los pxls dentro de la misma en este caso de 8*8 (Si todo sale bien devuelve true)
+			game.ConstructConsole(160, 100, 8, 8);//Definimos el tamaño de la ventana y el tamaño de los pxls dentro de la misma en este caso de 8*8 (Si todo sale bien devuelve true)
 			game.Start(); //Iniciamos la ventana
 		}
 	} while (inicioSin == true);
@@ -430,6 +444,14 @@ int main(int argc, char* argv[])
 			cout << "Modo Dif[icil" << endl << "Has ganado: " << J.wind << endl << "Y has perdido: " << J.losed << endl << endl;
 			break;
 		case 2:
+			system("CLS");
+			cout << "__________________Controles__________________" << endl;
+			cout << "  ↑   El personaje se movera al norte" << endl;
+			cout << "  →   El personaje se movera al este" << endl;
+			cout << "  ↓   El personaje se movera al sur" << endl;
+			cout << "  ←   El personaje se movera al sur" << endl;
+			cout << " esc  Regresara al jugador a su posici[on inicial y contara 1 derrota" << endl;
+			cout << " Para ganar se necesitara llegar a la meta de color rojo " << endl << endl;
 			break;
 		case 1:
 			system("CLS");
@@ -441,16 +463,16 @@ int main(int argc, char* argv[])
 			cin.ignore();
 			cin >> dif;
 			if (dif == 1) {
-				LargoLaberinto = 15; //40 columnas
-				AlturaLaberinto = 14; //20 fila
+				LargoLaberinto = 10 + rand() % (20 + 1 - 10);  //variable = limite_inferior + rand() % (limite_superior +1 - limite_inferior);
+				AlturaLaberinto = 7 + rand() % (14 + 1 - 7);
 			}
 			else if (dif == 2) {
-				LargoLaberinto = 25; //40 columnas
-				AlturaLaberinto = 15; //20 fila
+				LargoLaberinto = 20 + rand() % (30 + 1 - 20);
+				AlturaLaberinto = 15 + rand() % (20+1 - 15); 
 			}
 			else if (dif == 3) {
-				LargoLaberinto = 40; //40 columnas
-				AlturaLaberinto = 25; //20 fila
+				LargoLaberinto = 30 + rand() % (40+1-30);
+				AlturaLaberinto = 20 + rand() % (25+1-20);
 			}
 			else if (dif == 4) {
 				cout << "Regresando al men[u principal" << endl;
@@ -461,7 +483,7 @@ int main(int argc, char* argv[])
 				break;
 			}
 			Laberinto game;  //Creamos nuestro objeto
-			game.ConstructConsole(160, 100, 8, 8);//Definimos el tama�o de la ventana y el tama�o de los pxls dentro de la misma en este caso de 8*8 (Si todo sale bien devuelve true)
+			game.ConstructConsole(160, 100, 8, 8);//Definimos el tamaño de la ventana y el tamaño de los pxls dentro de la misma en este caso de 8*8 (Si todo sale bien devuelve true)
 			game.Start(); //Iniciamos la ventana
 		}
 
