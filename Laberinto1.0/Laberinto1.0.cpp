@@ -18,9 +18,10 @@ using namespace std; //Librerias estandar
 
 struct jugadores {
 	char nombre[30], contra[30];
-	int win, lose;
+	int winf, losef,winm,losem,wind,losed;
 };
 
+char contrainput[30];
 int opcion = NULL;
 FILE* ap;
 int op;
@@ -248,10 +249,24 @@ protected:
 			xp1 -=   sp;
 		}
 		if (GetKey(27).bHeld) { //Si damos esc volvemos a la posicion inicial 
-			J.lose += 1;
-			ap = fopen(Usu, "w");
-			fprintf(ap, "%s %s %d %d", J.nombre, J.contra, J.win, J.lose);
-			fclose(ap);
+			if (dif == 1) {
+				J.losef += 1;
+				ap = fopen(Usu, "w");
+				fprintf(ap, "%s %s %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
+				fclose(ap);
+			}
+			else if (dif == 2) {
+				J.losem += 1;
+				ap = fopen(Usu, "w");
+				fprintf(ap, "%s %s %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
+				fclose(ap);
+			}
+			else if (dif == 3) {
+				J.losed += 1;
+				ap = fopen(Usu, "w");
+				fprintf(ap, "%s %s %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
+				fclose(ap);
+			}
 			xp1 = xreinicio;
 			yp1 = yreinicio;
 		}
@@ -272,10 +287,24 @@ protected:
 		}
 
 		if (fin.top().first == xp1 && fin.top().second == yp1) { //Al ser dinamicos podemos hacer uso de el incluso sin haber declarado un valor por ello comparamos las coordenadas de nuestro personaje (x,Y)
-			J.win += 1;
-			ap = fopen(Usu, "w");
-			fprintf(ap, "%s %s %d %d", J.nombre, J.contra, J.win, J.lose);
-			fclose(ap);
+			if (dif == 1) {
+				J.winf += 1;
+				ap = fopen(Usu, "w");
+				fprintf(ap, "%s %s %d %d", J.nombre, J.contra, J.winf, J.losef,J.winm,J.losem,J.wind,J.losed);
+				fclose(ap);
+			}
+			else if (dif == 2) {
+				J.winm += 1;
+				ap = fopen(Usu, "w");
+				fprintf(ap, "%s %s %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
+				fclose(ap);
+			}
+			else if (dif == 3) {
+				J.wind += 1;
+				ap = fopen(Usu, "w");
+				fprintf(ap, "%s %s %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
+				fclose(ap);
+			}
 			//Si es asi regresa al inicio aqui iria la segunda parte donde pasa de nvl,etc.
 			Laberinto game1;  //Creamos nuestro objeto
 			game1.ConstructConsole(160, 100, 8, 8);//Definimos el tamaño de la ventana y el tamaño de los pxls dentro de la misma en este caso de 8*8 (Si todo sale bien devuelve true)
@@ -296,42 +325,53 @@ int main(int argc, char* argv[])
 		switch (op) {
 		case 1:
 			system("CLS");
-			printf("Ingresa tu nombre de usuario\n");
+			cout << "Ingresa tu nombre de usuario: ";
 			cin.ignore();
-			cin.getline(Usu, 20);
+			cin.getline(Usu, 20 , '\n');
 			strcat(Usu, ".txt");
 			ap = fopen(Usu, "r");
+			fscanf(ap, "%s %s %d %d %d %d %d %d", &J.nombre, &J.contra, &J.winf, &J.winf, &J.winm, &J.losem, &J.wind, &J.losed);
 			if (ap == NULL) {
 				system("CLS");
 				cout << endl << "Debes registarte en maze infinity para obtener tus estadisticas" << endl << endl << endl << endl << endl  ;
 				break;
 			}
-			else {
+			cout << "Ingrese su contrasena: ";
+			cin.getline(contrainput, 20, '\n');
+			cout << contrainput << endl << J.contra << endl;
+			if (strcmp(J.contra, contrainput) == 0) {
 				system("CLS");
-				fscanf(ap, "%s %s %d %d", J.nombre, J.contra, &J.win, &J.lose);
+				fscanf(ap, "%s %s %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
 				cout << "Bienvenido " << J.nombre << " tus estadisticas son: " << endl;
-				cout << "Has ganado: " << J.win << endl << " Y has perdido: " << J.lose << endl;
+				cout << "Modo Facil" << endl << "Has ganado: " << J.winf << endl << "Y has perdido: " << J.losef << endl << endl;
+				cout << "Modo Medio" << endl << "Has ganado: " << J.winm << endl << "Y has perdido: " << J.losem << endl << endl;
+				cout << "Modo Dif[icil" << endl << "Has ganado: " << J.wind << endl << "Y has perdido: " << J.losed << endl << endl;
 				fclose(ap);
 				break;
 			}
+			else {
+				cout << endl << "Contrasena incorrecta" << endl;
+				break;
+			}
+			
 		case 2:
 			system("CLS");
-			cout << "Bienvenido a Infinity Maze" << endl;
-			cout << "Ingrese su nombre de ususario" << endl;
+			cout << "Bienvenido al registro Infinity Maze" << endl;
+			cout << "Ingrese el nombre de ususario a registrar" << endl;
 			cin.ignore();
 			cin.getline(Usu, 20);
+			strcpy(J.nombre, Usu);
 			strcat(Usu, ".txt");//pega cadenas
 			ap = fopen(Usu, "w");
 			system("CLS");
 			cout << "Registro exitoso" << endl;
-			strcpy(J.nombre,Usu);
-			cout << endl << "Ingrese la contrasena" << endl;
-			cin.ignore();
-			cin.getline(J.contra, 30);
-			fprintf(ap, "%s %s %d %d", J.nombre, J.contra, 0, 0);
+			cout << "Ingrese la contrasena:  " ;
+			cin.getline(J.contra, 100, '\n');
+			fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, 0, 0, 0, 0, 0, 0);
 			fclose(ap);
 			system("CLS");
-			cout << endl << "Contrasena guardada" << endl;
+			cout << J.contra;
+			cout << "Contrasena guardada" << endl;
 			break;
 		case 3:
 			break;
