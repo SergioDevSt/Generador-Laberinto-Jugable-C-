@@ -1,19 +1,40 @@
+#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 #include <iostream>
 #include <stack>
 #include <stdlib.h> 
 #include <conio.h>
 #include <string>
-using namespace std; //Librerias estandar 
+#include <windows.h>
+#include<stdio.h>
+#include<string.h>
+#include <cstdlib>
+#include <cstring>
+#include <fstream>
 
+using namespace std; //Librerias estandar 
 #include "olcConsoleGameEngine.h"  //Libreria especial para el desarrollo de juegos en c++
+
+struct jugadores {
+	char nombre[30], contra[30];
+	int win, lose;
+};
+
+int opcion = NULL;
+FILE* ap;
+int op;
+char Usu[20], Con[20];
+jugadores J;
 
 class Laberinto : public olcConsoleGameEngine  //Nombre de la clase que vamos a usar
 {
 public:
 	Laberinto()		//Llamamos la clase que hereda todos los comandos de la libreria entre ello el nombre que le pondremos a la ventana 
 	{
-		m_sAppName = L"MAZE"; //Definimos el nombre de la ventana
+		m_sAppName = L"Laberinto Progra"; //Definimos el nombre de la ventana
 	}
+
 private:  //Privada no queremos lo modifiquen en el main o alguna otra parte solo esta clase 
 	int  LargoLaberinto;
 	int  AlturaLaberinto;		//Declaramos que tipo de variables vamos a usar y de que tipo para evitar problemas
@@ -26,7 +47,7 @@ private:  //Privada no queremos lo modifiquen en el main o alguna otra parte sol
 	int yreinicio; //Gurdara la posicion inicial del jugador 
 
 	int xfinal;
-	int yfinal;
+	int yfinal;		//Coordenadas Meta
 
 	//Esta clase nos ayuda a ser como guias es decir que la expresion solo puede estar 1 vez. Vease esta documentacion para entender mejor https://docs.microsoft.com/en-us/dotnet/api/system.flagsattribute?view=net-6.0
 	//Otro link para flags https://stackoverflow.com/questions/1448396/how-to-use-enums-as-flags-in-c
@@ -42,6 +63,7 @@ private:  //Privada no queremos lo modifiquen en el main o alguna otra parte sol
 
 	int  CeldasVisitadas;			//Saber cuantas cells o cudrados hemos visitado del laberinto
 	stack<pair<int, int>> m_stack;	//stack es un tipo de variable que facilita el algoritmo LIFO, tambien se podria un array,vector,etc.
+	
 	int LargoCelda;				//El tamano de los cuadrados dentro de la consola
 
 protected:
@@ -53,17 +75,24 @@ protected:
 		memset(PunteroPlanoC, 0, LargoLaberinto * AlturaLaberinto * sizeof(int)); //Formula multiplicas la altura y el largo de la ventana por el tamano de int en bytes //Iniciamos el array dinamico con el tamano en bytes que va a ocupar FIJANDOLO porque al ser dinamico no conservara todo los valores que podriamos usar mas adelante
 		
 		srand(clock());		//MUY IMPORTANTE ESTA WEA ME LLEVO un buen entenderle. Basicamente hace que funcione el random bien. https://programmerclick.com/article/19581679376/
+		//META
 		xfinal = (LargoLaberinto - 2) + rand() % ((LargoLaberinto - 1)+ 1 - (LargoLaberinto - 2));  //variable = limite_inferior + rand() % (limite_superior +1 - limite_inferior);
 		yfinal = rand() % AlturaLaberinto; //Estas son las variables de la meta
+		//JUGADOR
 		yp1 = rand() % AlturaLaberinto;
-		xp1 = rand() % 4; //Definimos una posicion al azar x,y para nuestro jugador dependiendo las columnas y filas
-		xreinicio = xp1; 
+		xp1 = rand() % 3; //Definimos una posicion al azar x,y para nuestro jugador dependiendo las columnas y filas
+
+		xreinicio = xp1;
 		yreinicio = yp1; //Guardamos las posiciones iniciales del jugador
+		//Inicio algoritmo
 		int x = rand() % LargoLaberinto;  //Le damos valores aletorios a las x y y para iniciar aletorio
 		int y = rand() % AlturaLaberinto;
+
 		m_stack.push(make_pair(x, y));  //Guardamos las cordenas y se convierte el nuevo inicio de nuestro stack e inicio del programa (Vease el algoritmo stack) asi como el inicio del juego
 		PunteroPlanoC[y * LargoLaberinto + x] = CELLVISITADA; //Le decimos al algoritmo que ya visitamos la celda con esta formula https://drive.google.com/file/d/10u0fwcOk_Zojh9IhUqfTx5G7jOzigAH9/view?usp=sharing
 		CeldasVisitadas = 1;			//Cuantas celdas hemos visitado 
+		
+		
 		LargoCelda = 3;				//El tamano de nuestro cuadrado
 		return true;
 	}
@@ -133,7 +162,7 @@ protected:
 			}
 		}
 
-		//Genera el laberinto
+		//Genera el laberinto/algoritmo
 		if (CeldasVisitadas < LargoLaberinto * AlturaLaberinto) //Evalua si debe seguir generando laberinto solo ni no ha visitado todas las cell/cuadrados
 		{
 			vector<int> neighbours;
@@ -146,7 +175,7 @@ protected:
 				//Y mismo proceso para este,sur y oeste. https://drive.google.com/file/d/1EDSLo1Cd9RNViiMdwFYAThsf6jVhT6zr/view
 				neighbours.push_back(0);
 			// Este
-			if (m_stack.top().first < LargoLaberinto - 1 && (PunteroPlanoC[SiguienteBloque(1, 0)] & CELLVISITADA) == 0)
+			if (/*False al final*/m_stack.top().first < LargoLaberinto - 1 && (PunteroPlanoC[SiguienteBloque(1, 0)] & CELLVISITADA) == 0)
 				neighbours.push_back(1);
 			// Sur
 			if (m_stack.top().second < AlturaLaberinto - 1 && (PunteroPlanoC[SiguienteBloque(0, 1)] & CELLVISITADA) == 0)
@@ -176,7 +205,6 @@ protected:
 					PunteroPlanoC[SiguienteBloque(0, 0)] |= CELLESTE;
 					m_stack.push(make_pair((m_stack.top().first + 1), (m_stack.top().second + 0)));
 					break;
-
 				case 2: // Sur
 					PunteroPlanoC[SiguienteBloque(0, +1)] |= CELLNORTE;
 					PunteroPlanoC[SiguienteBloque(0, 0)] |= CELLSUR;
@@ -219,7 +247,7 @@ protected:
 			xp1 -=   sp;
 		}
 		if (GetKey(27).bHeld) { //Si damos esc volvemos a la posicion inicial 
-
+			J.lose += 1;
 			xp1 = xreinicio;
 			yp1 = yreinicio;
 		}
@@ -240,19 +268,69 @@ protected:
 		}
 
 		if (fin.top().first == xp1 && fin.top().second == yp1) { //Al ser dinamicos podemos hacer uso de el incluso sin haber declarado un valor por ello comparamos las coordenadas de nuestro personaje (x,Y)
+			J.win += 1;
+			ap = fopen(Usu, "w");
+			fprintf(ap, "%s %s %d %d", J.nombre, J.contra, J.win, J.lose);
+			fclose(ap);
 			//Si es asi regresa al inicio aqui iria la segunda parte donde pasa de nvl,etc.
-			xp1 = xreinicio;
-			yp1 = yreinicio;
+			Laberinto game1;  //Creamos nuestro objeto
+			game1.ConstructConsole(160, 100, 8, 8);//Definimos el tamaño de la ventana y el tamaño de los pxls dentro de la misma en este caso de 8*8 (Si todo sale bien devuelve true)
+			game1.Start(); //Iniciamos la ventana
+
 		}
 		return true;
 	}
 };
-int main()
+int main(int argc, char* argv[])
 {
-
-		Laberinto game;  //Creamos nuestro objeto
-		game.ConstructConsole(160, 100, 8, 8);//Definimos el tamaño de la ventana y el tamaño de los pxls dentro de la misma en este caso de 2*2 (Si todo sale bien devuelve true)
-		game.Start(); //Iniciamos la ventana
-
+	do {
+		cout << "Bienvenido al juego de laberinto infinito " << endl << "Donde cada intento es una nueva aventura" << endl;
+		cout << "Elige la opcion que deses" << endl;
+		cout << "1.- Inicia Sesion" << endl << "2.- Registrate en infinite maze " << endl << "3.- Empezar a jugar" << endl;
+		cin >> op;
+		switch (op) {
+		case 2:
+			system("CLS");
+			cout << "Ingrese su nombre de ususario" << endl;
+			cin.ignore();
+			cin.getline(Usu, 20);
+			strcat(Usu, ".txt");//pega cadenas
+			ap = fopen(Usu, "w");
+			cout << "Registro exitoso" << endl << "Ingrese nuevamente su usuario" << endl;
+			cin.ignore();
+			cin.getline(J.nombre, 30);
+			cout << "Ingrese la contrasena" << endl;
+			cin.ignore();
+			cin.getline(J.contra, 30);
+			fprintf(ap, "%s %s %d %d", J.nombre, J.contra, 0, 0);
+			fclose(ap);
+			break;
+		case 1:
+			system("CLS");
+			cout << "Ingresa tu nombre de usuario" << endl;
+			cin.ignore();
+			cin.getline(Usu, 20);
+			strcat(Usu, ".txt");
+			ap = fopen(Usu, "r");
+			system("CLS");
+			cout << "Nombre de usuario correcto" << endl;
+			if (ap == NULL) {
+				system("CLS");
+				cout << endl << "Debes registarte en maze infinity para obtener tus estadisticas" << endl << endl;
+				break;
+			}
+			else {
+				fscanf(ap, "%s %s %d %d", J.nombre, J.contra, &J.win, &J.lose);
+				cout << "Bienvenido " << J.nombre << " tus estadisticas son: " << endl;
+				cout << "Has ganado: " << J.win << endl << "Y has perdido: " << J.lose << endl << endl;
+				fclose(ap);
+				break;
+			}
+		case 3:
+			Laberinto game;  //Creamos nuestro objeto
+			game.ConstructConsole(160, 100, 8, 8);//Definimos el tamaño de la ventana y el tamaño de los pxls dentro de la misma en este caso de 8*8 (Si todo sale bien devuelve true)
+			game.Start(); //Iniciamos la ventana
+		}
+	} while (op < 4);
 	return 0; //Informamos todo salio bien
 }

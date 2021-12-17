@@ -143,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Downloads\olcPixelGameEngine.h" />
+    <ClInclude Include="ConsoleLogger.h" />
     <ClInclude Include="olcConsoleGameEngine.h" />
     <ClInclude Include="olcPixelGameEngine.h" />
   </ItemGroup>
