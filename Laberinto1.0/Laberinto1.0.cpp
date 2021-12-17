@@ -284,52 +284,52 @@ protected:
 int main(int argc, char* argv[])
 {
 	do {
-		cout << "Bienvenido al juego de laberinto infinito " << endl << "Donde cada intento es una nueva aventura" << endl;
+
+		cout << "Bienvenido al juego de laberinto infinito " << endl << "Donde cada intento es una nueva aventura";
 		cout << "Elige la opcion que deses" << endl;
-		cout << "1.- Inicia Sesion" << endl << "2.- Registrate en infinite maze " << endl << "3.- Empezar a jugar" << endl;
+		cout << "2.- Inicia Sesion" << endl << "1.- Registrate en infinite maze " << endl << "3.- Empezar a jugar" << endl;
 		cin >> op;
 		switch (op) {
-		case 2:
-			system("CLS");
-			cout << "Ingrese su nombre de ususario" << endl;
-			cin.ignore();
-			cin.getline(Usu, 20);
-			strcat(Usu, ".txt");//pega cadenas
-			ap = fopen(Usu, "w");
-			cout << "Registro exitoso" << endl << "Ingrese nuevamente su usuario" << endl;
-			cin.ignore();
-			cin.getline(J.nombre, 30);
-			cout << "Ingrese la contrasena" << endl;
-			cin.ignore();
-			cin.getline(J.contra, 30);
-			fprintf(ap, "%s %s %d %d", J.nombre, J.contra, 0, 0);
-			fclose(ap);
-			break;
 		case 1:
-			system("CLS");
-			cout << "Ingresa tu nombre de usuario" << endl;
+			printf("Ingresa tu nombre de usuario\n");
 			cin.ignore();
 			cin.getline(Usu, 20);
 			strcat(Usu, ".txt");
 			ap = fopen(Usu, "r");
-			system("CLS");
-			cout << "Nombre de usuario correcto" << endl;
 			if (ap == NULL) {
 				system("CLS");
 				cout << endl << "Debes registarte en maze infinity para obtener tus estadisticas" << endl << endl;
 				break;
 			}
 			else {
+				system("CLS");
 				fscanf(ap, "%s %s %d %d", J.nombre, J.contra, &J.win, &J.lose);
 				cout << "Bienvenido " << J.nombre << " tus estadisticas son: " << endl;
-				cout << "Has ganado: " << J.win << endl << "Y has perdido: " << J.lose << endl << endl;
+				cout << "Has ganado: " << J.win << endl << " Y has perdido: " << J.lose << endl;
 				fclose(ap);
 				break;
 			}
+		case 2:
+			cout << endl << "Ingrese su nombre de ususario" << endl;
+			cin.ignore();
+			cin.getline(Usu, 20);
+			strcat(Usu, ".txt");//pega cadenas
+			ap = fopen(Usu, "w");
+			cout << endl << "Registro exitoso" << endl << "Ingrese nuevamente su usuario" << endl;
+			cin.ignore();
+			cin.getline(J.nombre, 30);
+			cout << endl << "Ingrese la contrasena" << endl;
+			cin.ignore();
+			cin.getline(J.contra, 30);
+			fprintf(ap, "%s %s %d %d", J.nombre, J.contra, 0, 0);
+			fclose(ap);
+			break;
 		case 3:
-			Laberinto game;  //Creamos nuestro objeto
-			game.ConstructConsole(160, 100, 8, 8);//Definimos el tamaño de la ventana y el tamaño de los pxls dentro de la misma en este caso de 8*8 (Si todo sale bien devuelve true)
-			game.Start(); //Iniciamos la ventana
+			J.win = 3 + J.win;
+			J.lose = 1 + J.lose;
+			ap = fopen(Usu, "w");
+			fprintf(ap, "%s %s %d %d", J.nombre, J.contra, J.win, J.lose);
+			fclose(ap);
 		}
 	} while (op < 4);
 	return 0; //Informamos todo salio bien
