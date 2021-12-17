@@ -21,6 +21,8 @@ struct jugadores {
 	int winf, losef,winm,losem,wind,losed;
 };
 
+bool inicioUsu = false;
+bool inicioSin = true;
 char contrainput[30];
 int opcion = NULL;
 FILE* ap;
@@ -248,23 +250,23 @@ protected:
 			
 			xp1 -=   sp;
 		}
-		if (GetKey(27).bHeld) { //Si damos esc volvemos a la posicion inicial 
-			if (dif == 1) {
+		if (GetKey(27).bPressed) { //Si damos esc volvemos a la posicion inicial 
+			if (dif == 1 && inicioUsu == true) {
 				J.losef += 1;
 				ap = fopen(Usu, "w");
-				fprintf(ap, "%s %s %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
+				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
 				fclose(ap);
 			}
-			else if (dif == 2) {
+			else if (dif == 2 && inicioUsu == true) {
 				J.losem += 1;
 				ap = fopen(Usu, "w");
-				fprintf(ap, "%s %s %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
+				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
 				fclose(ap);
 			}
-			else if (dif == 3) {
+			else if (dif == 3 && inicioUsu == true) {
 				J.losed += 1;
 				ap = fopen(Usu, "w");
-				fprintf(ap, "%s %s %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
+				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
 				fclose(ap);
 			}
 			xp1 = xreinicio;
@@ -287,22 +289,22 @@ protected:
 		}
 
 		if (fin.top().first == xp1 && fin.top().second == yp1) { //Al ser dinamicos podemos hacer uso de el incluso sin haber declarado un valor por ello comparamos las coordenadas de nuestro personaje (x,Y)
-			if (dif == 1) {
+			if (dif == 1 && inicioUsu == true) {
 				J.winf += 1;
 				ap = fopen(Usu, "w");
-				fprintf(ap, "%s %s %d %d", J.nombre, J.contra, J.winf, J.losef,J.winm,J.losem,J.wind,J.losed);
+				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
 				fclose(ap);
 			}
-			else if (dif == 2) {
+			else if (dif == 2 && inicioUsu == true ) {
 				J.winm += 1;
 				ap = fopen(Usu, "w");
-				fprintf(ap, "%s %s %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
+				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
 				fclose(ap);
 			}
-			else if (dif == 3) {
+			else if (dif == 3 && inicioUsu == true) {
 				J.wind += 1;
 				ap = fopen(Usu, "w");
-				fprintf(ap, "%s %s %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
+				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
 				fclose(ap);
 			}
 			//Si es asi regresa al inicio aqui iria la segunda parte donde pasa de nvl,etc.
@@ -318,7 +320,7 @@ int main(int argc, char* argv[])
 {
 	do {
 
-		cout << "Bienvenido al juego de laberinto infinito " << endl << "Donde cada intento es una nueva aventura";
+		cout << "Bienvenido al juego de laberinto infinito " << endl << "Donde cada intento es una nueva aventura" << endl;
 		cout << "Elige la opcion que deses" << endl;
 		cout << "1.- Inicia Sesion" << endl << "2.- Registrate en infinite maze " << endl << "3.- Controles" << endl << "4.- Empezar a jugar" << endl;
 		cin >> op;
@@ -330,7 +332,7 @@ int main(int argc, char* argv[])
 			cin.getline(Usu, 20 , '\n');
 			strcat(Usu, ".txt");
 			ap = fopen(Usu, "r");
-			fscanf(ap, "%s %s %d %d %d %d %d %d", &J.nombre, &J.contra, &J.winf, &J.winf, &J.winm, &J.losem, &J.wind, &J.losed);
+			fscanf(ap, "%s %s %d %d %d %d %d %d", &J.nombre, &J.contra, &J.winf, &J.losef, &J.winm, &J.losem, &J.wind, &J.losed);
 			if (ap == NULL) {
 				system("CLS");
 				cout << endl << "Debes registarte en maze infinity para obtener tus estadisticas" << endl << endl << endl << endl << endl  ;
@@ -341,12 +343,10 @@ int main(int argc, char* argv[])
 			cout << contrainput << endl << J.contra << endl;
 			if (strcmp(J.contra, contrainput) == 0) {
 				system("CLS");
-				fscanf(ap, "%s %s %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
-				cout << "Bienvenido " << J.nombre << " tus estadisticas son: " << endl;
-				cout << "Modo Facil" << endl << "Has ganado: " << J.winf << endl << "Y has perdido: " << J.losef << endl << endl;
-				cout << "Modo Medio" << endl << "Has ganado: " << J.winm << endl << "Y has perdido: " << J.losem << endl << endl;
-				cout << "Modo Dif[icil" << endl << "Has ganado: " << J.wind << endl << "Y has perdido: " << J.losed << endl << endl;
-				fclose(ap);
+				fscanf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
+				cout << "Secci[on iniciada" << endl << endl;
+				inicioUsu = true;
+				inicioSin = false;
 				break;
 			}
 			else {
@@ -377,32 +377,94 @@ int main(int argc, char* argv[])
 			break;
 		case 4:
 			system("CLS");
+			cout << "No tienes una secci[on iniciada y tu progreso no se guardara recomendamos crear o iniciar seci[on" << endl;
 			cout << "Es hora de empezar" << endl << "Seleccione la dificultad" << endl;
 			cout << "1.- Facil" << endl;
 			cout << "2.- Medio" << endl;
 			cout << "3.- Dificil" << endl;
+			cout << "4.- Regresar al men[u principal" << endl;
 			cin.ignore();
 			cin >> dif;
 			if (dif == 1) {
 				LargoLaberinto = 15; //40 columnas
 				AlturaLaberinto = 14; //20 fila
 			}
-			else if(dif == 2) {
+			else if (dif == 2) {
 				LargoLaberinto = 25; //40 columnas
 				AlturaLaberinto = 15; //20 fila
 			}
-			else if(dif == 3) {
+			else if (dif == 3) {
 				LargoLaberinto = 40; //40 columnas
 				AlturaLaberinto = 25; //20 fila
 			}
-			else {
-				cout << "Ingrese una dificultadad valida";
+			else if (dif == 4) {
+				cout << "Regresando al men[u principal" << endl;
+				break;
+			}else {
+				cout << "Ingrese una opci[on valida" << endl;
 				break;
 			}
 			Laberinto game;  //Creamos nuestro objeto
 			game.ConstructConsole(160, 100, 8, 8);//Definimos el tamaño de la ventana y el tamaño de los pxls dentro de la misma en este caso de 8*8 (Si todo sale bien devuelve true)
 			game.Start(); //Iniciamos la ventana
 		}
-	} while (op < 4);
+	} while (inicioSin == true);
+	while (inicioUsu == true){
+
+		cout << "Bienvenido " << J.nombre << endl;
+		cout << "Elige la opcion que deses" << endl;
+		cout << "1.- Empezar a jugar" << endl  << "2.- Controles" << endl << "3.- Estadisticas" << endl << "4.- Cerrar secion" << endl;
+		cin >> op;
+		switch (op) {
+		case 4:
+			inicioUsu = false;
+			inicioSin = true;
+			fclose(ap);
+			cout << "Seci[on cerrada" << endl;
+			break;
+		case 3:
+			system("CLS");
+			cout << J.nombre << " tus estadisticas son: " << endl;
+			cout << endl << "Modo Facil" << endl << "Has ganado: " << J.winf << endl << "Y has perdido: " << J.losef << endl << endl;
+			cout << "Modo Medio" << endl << "Has ganado: " << J.winm << endl << "Y has perdido: " << J.losem << endl << endl;
+			cout << "Modo Dif[icil" << endl << "Has ganado: " << J.wind << endl << "Y has perdido: " << J.losed << endl << endl;
+			break;
+		case 2:
+			break;
+		case 1:
+			system("CLS");
+			cout << "Es hora de empezar " << J.nombre << endl << "Seleccione la dificultad" << endl;
+			cout << "1.- Facil" << endl;
+			cout << "2.- Medio" << endl;
+			cout << "3.- Dificil" << endl;
+			cout << "4.- Regresar al men[u principal" << endl;
+			cin.ignore();
+			cin >> dif;
+			if (dif == 1) {
+				LargoLaberinto = 15; //40 columnas
+				AlturaLaberinto = 14; //20 fila
+			}
+			else if (dif == 2) {
+				LargoLaberinto = 25; //40 columnas
+				AlturaLaberinto = 15; //20 fila
+			}
+			else if (dif == 3) {
+				LargoLaberinto = 40; //40 columnas
+				AlturaLaberinto = 25; //20 fila
+			}
+			else if (dif == 4) {
+				cout << "Regresando al men[u principal" << endl;
+				break;
+			}else {
+				system("CLS");
+				cout << "Ingrese una opci[on valida" << endl << endl;
+				break;
+			}
+			Laberinto game;  //Creamos nuestro objeto
+			game.ConstructConsole(160, 100, 8, 8);//Definimos el tamaño de la ventana y el tamaño de los pxls dentro de la misma en este caso de 8*8 (Si todo sale bien devuelve true)
+			game.Start(); //Iniciamos la ventana
+		}
+
+	} 
 	return 0; //Informamos todo salio bien
 }
