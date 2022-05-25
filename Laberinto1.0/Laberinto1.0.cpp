@@ -1,6 +1,7 @@
 ﻿#ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS
 #endif
+
 #include <iostream>
 #include <stack>
 #include <stdlib.h> 
@@ -40,7 +41,7 @@ class Laberinto : public olcConsoleGameEngine  //Nombre de la clase que vamos a 
 public:
 	Laberinto()		//Llamamos la clase que hereda todos los comandos de la libreria entre ello el nombre que le pondremos a la ventana 
 	{
-		m_sAppName = L"Laberinto Progra"; //Definimos el nombre de la ventana
+		m_sAppName = L"Laberinto EDA1"; //Definimos el nombre de la ventana
 	}
 
 private:  //Privada no queremos lo modifiquen en el main o alguna otra parte solo esta clase 
@@ -91,7 +92,7 @@ protected:
 		PunteroPlanoC = new int[LargoLaberinto * AlturaLaberinto]; //Declaramos un array dinamico
 		memset(PunteroPlanoC, 0, LargoLaberinto * AlturaLaberinto * sizeof(int)); //Formula multiplicas la altura y el largo de la ventana por el tamano de int en bytes //Iniciamos el array dinamico con el tamano en bytes que va a ocupar FIJANDOLO porque al ser dinamico no conservara todo los valores que podriamos usar mas adelante
 		
-		srand(clock());		//MUY IMPORTANTE ESTA WEA ME LLEVO un buen entenderle. Basicamente hace que funcione el random bien. https://programmerclick.com/article/19581679376/
+		srand(clock());		//Hace que funcione el random bien. https://programmerclick.com/article/19581679376/
 		//META
 		xfinal = (LargoLaberinto - 2) + rand() % ((LargoLaberinto - 1)+ 1 - (LargoLaberinto - 2));  //variable = limite_inferior + rand() % (limite_superior +1 - limite_inferior);
 		yfinal = rand() % AlturaLaberinto; //Estas son las variables de la meta
@@ -178,10 +179,16 @@ protected:
 				}
 			}
 		}
+		//Pa demostracion del prinicipio de nuestro stack 
+		for (int py = 0; py < LargoCelda; py++)
+			for (int px = 0; px < LargoCelda; px++)
+				Draw(m_stack.top().first * (LargoCelda + 1) + px, m_stack.top().second * (LargoCelda + 1) + py, 0x2588, FG_GREEN); 
+
 		srand(clock());
 		//Genera el laberinto/algoritmo
 		if (CeldasVisitadas < LargoLaberinto * AlturaLaberinto) //Evalua si debe seguir generando laberinto solo ni no ha visitado todas las cell/cuadrados
 		{
+			this_thread::sleep_for(100ms);
 			srand(clock());
 			vector<int> neighbours;
 			neighbours.clear();
@@ -250,112 +257,122 @@ protected:
 				m_stack.pop();
 			}
 		}
+		bool init = false;
+		if (CeldasVisitadas >= LargoLaberinto * AlturaLaberinto ) //Evalua si debe seguir generando laberinto solo ni no ha visitado todas las cell/cuadrados
+		{
+			init = true;\
+			for (int py = 0; py < LargoCelda; py++)
+				for (int px = 0; px < LargoCelda; px++)
+					Draw(m_stack.top().first * (LargoCelda + 1) + px, m_stack.top().second * (LargoCelda + 1) + py, 0x2588, FG_WHITE); //Limpiamos la demostracion de nuestro stack
+		}
 		int sp = 1;
-		//Norte
-		if (GetKey(38).bPressed && (PunteroPlanoC[posip1(0, 0)] & CELLNORTE) == 1 ||  (PunteroPlanoC[posip1(1, -1)] & CELLOESTE)  == 1) { //Determinamos si puede moverse asi al norte con el uso de flags
-			yp1 -= sp ;
-		}
-		//Sur
-		if (GetKey(40).bPressed && (PunteroPlanoC[posip1(0, 0)] & CELLSUR) || (PunteroPlanoC[posip1(1, 1)] & CELLOESTE) == 1) { //Determinamos si puede moverse asi el sur con el uso de flags ademas de apoyarnos de otro cuadro https://drive.google.com/file/d/1uCX87TdMjKkrFMD4U_ncKoqf4DnKa9Hl/view?usp=sharing
-			yp1 +=  sp ;			//Pues si queremos ir sur agregamos 1 positivo esta implicito podria ser directo pero es para mas facil comprension
-			//Si se les ocurre una manera de manejar mejor la velocidad del jugador me avisan
-		}//Repetir esto con todos
-		//Este
-		if (GetKey(39).bPressed && (PunteroPlanoC[posip1(0, 0)] & CELLESTE) || (PunteroPlanoC[posip1(1, 0)] & CELLOESTE) == 1) {
-			xp1 +=  sp ;
-		}
-		//Oeste
-		if (GetKey(37).bPressed && (PunteroPlanoC[posip1(0, 0)] & CELLOESTE) || (PunteroPlanoC[posip1(-1, 0)] & CELLESTE) == 1) {
-			
-			xp1 -=   sp;
-		}
-		if (GetKey(27).bPressed) { //Si damos esc volvemos a la posicion inicial 
-			if (dif == 1 && inicioUsu == true) {
-				J.losef += 1;
-				ap = fopen(Usu, "w");
-				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
-				fclose(ap);
+		if(init){
+			//Norte
+			if (GetKey(38).bPressed && (PunteroPlanoC[posip1(0, 0)] & CELLNORTE) == 1 || (PunteroPlanoC[posip1(1, -1)] & CELLOESTE) == 1) { //Determinamos si puede moverse asi al norte con el uso de flags
+				yp1 -= sp;
 			}
-			else if (dif == 2 && inicioUsu == true) {
-				J.losem += 1;
-				ap = fopen(Usu, "w");
-				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
-				fclose(ap);
+			//Sur
+			if (GetKey(40).bPressed && (PunteroPlanoC[posip1(0, 0)] & CELLSUR) || (PunteroPlanoC[posip1(1, 1)] & CELLOESTE) == 1) { //Determinamos si puede moverse asi el sur con el uso de flags ademas de apoyarnos de otro cuadro https://drive.google.com/file/d/1uCX87TdMjKkrFMD4U_ncKoqf4DnKa9Hl/view?usp=sharing
+				yp1 += sp;			//Pues si queremos ir sur agregamos 1 positivo esta implicito podria ser directo pero es para mas facil comprension
+				//Si se les ocurre una manera de manejar mejor la velocidad del jugador me avisan
+			}//Repetir esto con todos
+			//Este
+			if (GetKey(39).bPressed && (PunteroPlanoC[posip1(0, 0)] & CELLESTE) || (PunteroPlanoC[posip1(1, 0)] & CELLOESTE) == 1) {
+				xp1 += sp;
 			}
-			else if (dif == 3 && inicioUsu == true) {
-				J.losed += 1;
-				ap = fopen(Usu, "w");
-				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
-				fclose(ap);
-			}
-			xp1 = xreinicio;
-			yp1 = yreinicio;
-		}
-		if (GetKey(8).bPressed) { //Si damos esc volvemos a la posicion inicial 
-			this_thread::sleep_for(200ms);
-			if (dif == 1 && inicioUsu == true) {
-				J.losef += 1;
-				ap = fopen(Usu, "w");
-				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
-				fclose(ap);
-			}
-			else if (dif == 2 && inicioUsu == true) {
-				J.losem += 1;
-				ap = fopen(Usu, "w");
-				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
-				fclose(ap);
-			}
-			else if (dif == 3 && inicioUsu == true) {
-				J.losed += 1;
-				ap = fopen(Usu, "w");
-				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
-				fclose(ap);
-			}
-			Laberinto game1;  //Creamos nuestro objeto
-			game1.ConstructConsole(160, 100, 8, 8);//Definimos el tamaño de la ventana y el tamaño de los pxls dentro de la misma en este caso de 8*8 (Si todo sale bien devuelve true)
-			game1.Start(); //Iniciamos la ventana
-			this_thread::sleep_for(200ms);
-		}
+			//Oeste
+			if (GetKey(37).bPressed && (PunteroPlanoC[posip1(0, 0)] & CELLOESTE) || (PunteroPlanoC[posip1(-1, 0)] & CELLESTE) == 1) {
 
-		for (int py = 0; py < LargoCelda; py++)
-			for (int px = 0; px < LargoCelda; px++)
-				Draw(xp1 * (LargoCelda +1 ) + px, yp1 * (LargoCelda + 1) + py, PIXEL_SOLID, FG_DARK_GREEN); // Dibujamos a nuestro jugador podria ser un objeto pero ya me canse
+				xp1 -= sp;
+			}
+			if (GetKey(27).bPressed) { //Si damos esc volvemos a la posicion inicial 
+				if (dif == 1 && inicioUsu == true) {
+					J.losef += 1;
+					ap = fopen(Usu, "w");
+					fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
+					fclose(ap);
+				}
+				else if (dif == 2 && inicioUsu == true) {
+					J.losem += 1;
+					ap = fopen(Usu, "w");
+					fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
+					fclose(ap);
+				}
+				else if (dif == 3 && inicioUsu == true) {
+					J.losed += 1;
+					ap = fopen(Usu, "w");
+					fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
+					fclose(ap);
+				}
+				xp1 = xreinicio;
+				yp1 = yreinicio;
+			}
+			if (GetKey(8).bPressed) { //Si damos esc volvemos a la posicion inicial 
+				this_thread::sleep_for(200ms);
+				if (dif == 1 && inicioUsu == true) {
+					J.losef += 1;
+					ap = fopen(Usu, "w");
+					fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
+					fclose(ap);
+				}
+				else if (dif == 2 && inicioUsu == true) {
+					J.losem += 1;
+					ap = fopen(Usu, "w");
+					fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
+					fclose(ap);
+				}
+				else if (dif == 3 && inicioUsu == true) {
+					J.losed += 1;
+					ap = fopen(Usu, "w");
+					fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
+					fclose(ap);
+				}
+				Laberinto game1;  //Creamos nuestro objeto
+				game1.ConstructConsole(160, 100, 8, 8);//Definimos el tamaño de la ventana y el tamaño de los pxls dentro de la misma en este caso de 8*8 (Si todo sale bien devuelve true)
+				game1.Start(); //Iniciamos la ventana
+				this_thread::sleep_for(200ms);
+			}
 
-		stack<pair<int, int>> fin;  //Aqui declaro la salida podria unirlo con el personaje pero me canse 
+			for (int py = 0; py < LargoCelda; py++)
+				for (int px = 0; px < LargoCelda; px++)
+					Draw(xp1 * (LargoCelda + 1) + px, yp1 * (LargoCelda + 1) + py, PIXEL_SOLID, FG_DARK_GREEN); // Dibujamos a nuestro jugador podria ser un objeto pero ya me canse
 
-		for (int py = 0; py < LargoCelda; py++) {
-			for (int px = 0; px < LargoCelda; px++) {
-				Draw(xfinal * (LargoCelda + 1) + px, yfinal * (LargoCelda + 1) + py, PIXEL_SOLID, FG_RED); // Dibujamos la meta con un random que lo pone casi al final del eje x
-			}
-			if (py >= 2) {
-				fin.push(make_pair(xfinal, yfinal)); //Una vez dibujamos la meta tmb guardamos sus coordenadas en un stack dinamico
-			}
-		}
+			stack<pair<int, int>> fin;  //Aqui declaro la salida podria unirlo con el personaje pero me canse 
 
-		if (fin.top().first == xp1 && fin.top().second == yp1) { //Al ser dinamicos podemos hacer uso de el incluso sin haber declarado un valor por ello comparamos las coordenadas de nuestro personaje (x,Y)
-			if (dif == 1 && inicioUsu == true) {
-				J.winf += 1;
-				ap = fopen(Usu, "w");
-				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
-				fclose(ap);
+			for (int py = 0; py < LargoCelda; py++) {
+				for (int px = 0; px < LargoCelda; px++) {
+					Draw(xfinal * (LargoCelda + 1) + px, yfinal * (LargoCelda + 1) + py, PIXEL_SOLID, FG_RED); // Dibujamos la meta con un random que lo pone casi al final del eje x
+				}
+				if (py >= 2) {
+					fin.push(make_pair(xfinal, yfinal)); //Una vez dibujamos la meta tmb guardamos sus coordenadas en un stack dinamico
+				}
 			}
-			else if (dif == 2 && inicioUsu == true ) {
-				J.winm += 1;
-				ap = fopen(Usu, "w");
-				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
-				fclose(ap);
-			}
-			else if (dif == 3 && inicioUsu == true) {
-				J.wind += 1;
-				ap = fopen(Usu, "w");
-				fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
-				fclose(ap);
-			}
-			//Si es asi regresa al inicio aqui iria la segunda parte donde pasa de nvl,etc.
-			Laberinto game1;  //Creamos nuestro objeto
-			game1.ConstructConsole(160, 100, 8, 8);//Definimos el tamaño de la ventana y el tamaño de los pxls dentro de la misma en este caso de 8*8 (Si todo sale bien devuelve true)
-			game1.Start(); //Iniciamos la ventana
 
+			if (fin.top().first == xp1 && fin.top().second == yp1) { //Al ser dinamicos podemos hacer uso de el incluso sin haber declarado un valor por ello comparamos las coordenadas de nuestro personaje (x,Y)
+				if (dif == 1 && inicioUsu == true) {
+					J.winf += 1;
+					ap = fopen(Usu, "w");
+					fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
+					fclose(ap);
+				}
+				else if (dif == 2 && inicioUsu == true) {
+					J.winm += 1;
+					ap = fopen(Usu, "w");
+					fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
+					fclose(ap);
+				}
+				else if (dif == 3 && inicioUsu == true) {
+					J.wind += 1;
+					ap = fopen(Usu, "w");
+					fprintf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
+					fclose(ap);
+				}
+				//Si es asi regresa al inicio aqui iria la segunda parte donde pasa de nvl,etc.
+				Laberinto game1;  //Creamos nuestro objeto
+				game1.ConstructConsole(160, 100, 8, 8);//Definimos el tamaño de NUESTRO NUEVO JUEGO, la ventana y el tamaño de los pxls dentro de la misma en este caso de 8*8 (Si todo sale bien devuelve true)
+				game1.Start(); //Iniciamos la ventana
+
+			}
 		}
 		return true;
 	}
@@ -388,7 +405,7 @@ int main(int argc, char* argv[])
 			if (strcmp(J.contra, contrainput) == 0) {
 				system("CLS");
 				fscanf(ap, "%s %s %d %d %d %d %d %d", J.nombre, J.contra, J.winf, J.losef, J.winm, J.losem, J.wind, J.losed);
-				cout << "Secci[on iniciada" << endl << endl;
+				cout << "Sección iniciada" << endl << endl;
 				inicioUsu = true;
 				inicioSin = false;
 				break;
@@ -439,7 +456,7 @@ int main(int argc, char* argv[])
 			cin >> dif;
 			if (dif == 4) {
 				system("CLS");
-				cout << "Regresando al men[u principal" << endl;
+				cout << "Regresando al menú principal" << endl;
 				break;
 			}
 			else if (dif < 4) {
@@ -448,7 +465,7 @@ int main(int argc, char* argv[])
 				game.Start(); //Iniciamos la ventana
 			}
 			else {
-				cout << "Ingrese una opci[on valida" << endl;
+				cout << "Ingrese una opción valida" << endl;
 				break;
 			}
 			Laberinto game;  //Creamos nuestro objeto
@@ -472,7 +489,7 @@ int main(int argc, char* argv[])
 			cout << J.nombre << " tus estadisticas son: " << endl;
 			cout << endl << "Modo Facil" << endl << "Has ganado: " << J.winf << endl << "Y has perdido: " << J.losef << endl << endl;
 			cout << "Modo Medio" << endl << "Has ganado: " << J.winm << endl << "Y has perdido: " << J.losem << endl << endl;
-			cout << "Modo Dif[icil" << endl << "Has ganado: " << J.wind << endl << "Y has perdido: " << J.losed << endl << endl;
+			cout << "Modo Difícil" << endl << "Has ganado: " << J.wind << endl << "Y has perdido: " << J.losed << endl << endl;
 			break;
 		case 2:
 			system("CLS");
@@ -491,12 +508,12 @@ int main(int argc, char* argv[])
 			cout << "1.- Facil" << endl;
 			cout << "2.- Medio" << endl;
 			cout << "3.- Dificil" << endl;
-			cout << "4.- Regresar al men[u principal" << endl;
+			cout << "4.- Regresar al menú principal" << endl;
 			cin.ignore();
 			cin >> dif;
 			if (dif == 4) {
 				system("CLS");
-				cout << "Regresando al men[u principal" << endl;
+				cout << "Regresando al menú principal" << endl;
 			}
 			else if (dif < 4) {
 				Laberinto game;  //Creamos nuestro objeto
@@ -505,7 +522,7 @@ int main(int argc, char* argv[])
 			}
 			else {
 				system("CLS");
-				cout << "Ingrese una opci[on valida" << endl << endl;
+				cout << "Ingrese una opción valida" << endl << endl;
 				break;
 			}
 		}
